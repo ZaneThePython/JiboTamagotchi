@@ -9,7 +9,8 @@ const SAID_MS = 2500; // how long the pet's reaction stays on screen
 class TamagotchiSkill extends BeSkill {
     constructor() { super(...arguments); this.generation = 0; this.view = null; this.closing = null; }
     open() {
-        if (this.view) { this.close(error => { if (!error) this.open(); }); return; }
+        // Reopen whenever the old view is gone; exit rather than sit with no UI if it still cannot close.
+        if (this.view) { this.close(() => { if (!this.view) this.open(); else this.exit({ noElementsOfSurprise: true }); }); return; }
         const generation = ++this.generation, views = jibo.face.views, now = Date.now();
         let saved = null; try { saved = global.localStorage.getItem(STORE_KEY); } catch (_) {}
         this.pet = Pet.advance(Pet.load(saved, now), now); this.save();
@@ -44,6 +45,7 @@ class TamagotchiSkill extends BeSkill {
     leave() { if (this.leaving) return; this.leaving = true; this.exit({ noElementsOfSurprise: true }); }
     close(done) {
         done = done || (() => {});
+        if (this.closing && this.closing.finished && this.closing.error) this.closing = null; // retry a failed close, don't replay it
         if (this.closing) {
             if (this.closing.finished) done(this.closing.error); else this.closing.callbacks.push(done);
             return;

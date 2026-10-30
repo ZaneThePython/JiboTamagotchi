@@ -1,11 +1,11 @@
 {
   "name": "@be/tamagotchi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A little pet that lives on Jibo's screen: feed it, play with it and put it to bed as it grows up.",
   "main": "index.js",
   "config": { "standalone": true },
   "jibo": { "main": "index.html", "type": "asset-pack", "display-name": "tamagotchi", "prompt": "Tamagotchi" },
   "engines": { "node": ">=6.0" },
   "syncDependencies": ["jibo", "@be/be-framework"],
-  "scripts": { "test": "node tests/pet.test.js" }
+  "scripts": { "test": "node tests/pet.test.js && node tests/close-retry.test.js" }
 }
